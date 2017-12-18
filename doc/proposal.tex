@@ -1,0 +1,74 @@
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\parindent=0in
+\input{testpoints}
+
+\usepackage{graphicx}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{verbatim}
+\usepackage{ascii}
+\usepackage{subcaption}
+\usepackage{lipsum}
+\usepackage{mwe}
+
+\newcommand{\argmax}{\mathop{\arg\max}}
+\newcommand{\argmin}{\mathop{\arg\min}}
+\newcommand{\deriv}[1]{\frac{\partial}{\partial {#1}} }
+\newcommand{\dsep}{\mbox{dsep}}
+\newcommand{\Pa}{\mathop{Pa}}
+\newcommand{\ND}{\mbox{ND}}
+\newcommand{\De}{\mbox{De}}
+\newcommand{\Ch}{\mbox{Ch}}
+\newcommand{\graphG}{{\mathcal{G}}}
+\newcommand{\graphH}{{\mathcal{H}}}
+\newcommand{\setA}{\mathcal{A}}
+\newcommand{\setB}{\mathcal{B}}
+\newcommand{\setS}{\mathcal{S}}
+\newcommand{\setV}{\mathcal{V}}
+\DeclareMathOperator*{\union}{\bigcup}
+\DeclareMathOperator*{\intersection}{\bigcap}
+\DeclareMathOperator*{\Val}{Val}
+\newcommand{\mbf}[1]{{\mathbf{#1}}}
+\newcommand{\eq}{\!=\!}
+\usepackage[usenames,dvipsnames]{color}
+\newcommand{\bto}[1]{\textcolor{Bittersweet}{[#1 -BTO]}}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\begin{document}
+
+{\centering
+  \rule{6.3in}{2pt}
+  \vspace{0.1em}
+  {\Large
+    CS670: Computer Vision - Fall 2017 \\
+    Proposal: Image Captioning with Dilated CNNs and Attention Model\\
+  }
+  \vspace{0.1em}
+  \textbf{Members:} Ao Liu, Weijie Shi, Zitao Wang\hspace{20pt}\textbf{Date:} October 20, 2017\\
+  \vspace{0.1em}
+  \rule{6.3in}{1.5pt}
+}
+\vspace{0.1pc}
+
+\textbf{Problem: }After deep learning introduced, more and more computer vision (CV) applications have done great jobs on different kinds of vision tasks, so as the natural language processing (NLP) applications. Image is the way that we learn from our world. We as human beings always see stuff in daily life and understand what we see with our brains, or even tell others about that since we were kids. Although some artificial intelligent (AI) and machine learning (ML) applications are already competitive with human performance, there is few that breaks the gap between CV and NLP. We aim to build a simple system that can describe a picture with a sentence of human readable natural language.\\
+
+\textbf{Methodology: }Convolutional Neural Networks (CNNs) in general works well and fast on CV tasks. Dilated CNNs seems to be faster than traditional CNNs and removes redundant information. We aim to build our system based on this advantage. Also, some previous work show that dilated CNNs also works well on some NLP tasks, so that we may also want to try if it works well on text generation task.\\
+\hspace*{0.5cm}Attention models are broadly used on many tasks. However, there are several alternatives of attention model. We also want to test which one works better for our task.\\
+
+\textbf{Dataset:} The dataset we are going to use is Common Objects in COntext (COCO). COCO dataset is a large-scale object detection, segmentation, and captioning dataset. COCO has several features: Object segmentation, Recognition in context, Superpixel stuff segmentation, 330K images (>200K labeled), 1.5 million object instances, 80 object categories, 91 stuff categories and 5 captions per image.\\
+
+\textbf{Collaboration Plan: }\\
+\hspace*{0.5cm}\textbf{Ao Liu} will mainly work on adapting dilated CNNs on language generation of the task.\\
+\hspace*{0.5cm}\textbf{Weijie Shi} will mainly work on choosing the attention model and evaluating the performance.\\
+\hspace*{0.5cm}\textbf{Zitao Wang} will mainly work on improving the performance of vision part of the system.\\
+
+\end{document}
