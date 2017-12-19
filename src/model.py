@@ -1,4 +1,6 @@
 from __future__ import division, print_function
+import codecs
+import pickle
 import numpy as np
 from keras.models import Model, Input
 from keras.layers import Conv1D, MaxPooling1D, BatchNormalization, GlobalAveragePooling1D, Activation, Dropout, \
@@ -69,12 +71,12 @@ class ImageCaptionModel(object):
         
         return model
     
-    def _caption_model(self, conv_feats, prev_words):
-        Vg = GlobalAveragePooling1D()(conv_feats)
+    def _caption_model(self, image_feats, prev_words):
+        Vg = GlobalAveragePooling1D()(image_feats)
         Vg = Dense(self.embed_dim, activation='relu')(Vg)
         Vg = Dropout(self.dp_rate)(Vg)
         
-        Vi = Conv1D(self.z_dim, 1, padding='same', activation='relu')(conv_feats)
+        Vi = Conv1D(self.z_dim, 1, padding='same', activation='relu')(image_feats)
         Vi = Dropout(self.dp_rate)(Vi)
         Vi_embed = Conv1D(self.embed_dim, 1, padding='same', activation='relu')(Vi)
         
@@ -145,7 +147,7 @@ if __name__ == '__main__':
     model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', sample_weight_mode="temporal",
                   metrics=['mse'])
     model.summary()
-    plot_model(model, to_file='../doc/model.png')
+    # plot_model(model, to_file='../doc/model.png')
     
     model_file = '../models/weights.{epoch:02d}-{val_loss:.2f}.h5'
     
@@ -165,9 +167,19 @@ if __name__ == '__main__':
               validation_data=(
                   {'image_input': imfeats_val, 'prev_words': caps_val}, {'out': caps_val.reshape(num_val, 17, 1)}))
     
-    predictions = model.predict(x={'image_input': imfeats_train, 'prev_words': caps_train})
-    mse = model.evaluate(x={'image_input': imfeats_val, 'prev_words': caps_val},
-                         y={'out': caps_val.reshape(num_val, 17, 1)},
-                         batch_size=batch_size)
-    print(predictions.argmax(-1)[0])
-    print(mse)
+    predictions_train = model.predict(x={'image_input': imfeats_train, 'prev_words': caps_train}, batch_size=batch_size)
+    predictions_val = model.predict(x={'image_input': imfeats_val, 'prev_words': caps_val}, batch_size=batch_size)
+    mse_train = model.evaluate(x={'image_input': imfeats_train, 'prev_words': caps_train},
+                               y={'out': caps_train.reshape(num_train, 17, 1)},
+                               batch_size=batch_size)
+    mse_val = model.evaluate(x={'image_input': imfeats_val, 'prev_words': caps_val},
+                             y={'out': caps_val.reshape(num_val, 17, 1)},
+                             batch_size=batch_size)
+    model.save('../models/final_model.h5')
+    print(predictions_train.argmax(-1)[0])
+    print(predictions_val.argmax(-1)[0])
+    print(mse_train)
+    print(mse_val)
+    pickle.dump({'pred_train': predictions_train, 'decode_pred_train': decode_captions(predictions_train),
+                 'pred_val': predictions_val, 'decode_pred_val': decode_captions(predictions_val)},
+                codecs.open('../models/predictions.pkl', 'wb'))
