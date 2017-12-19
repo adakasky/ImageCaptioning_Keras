@@ -138,7 +138,8 @@ if __name__ == '__main__':
     icm = ImageCaptionModel(feature_dim=512, embed_dim=300, z_dim=300, lstm_dim=512, sent_len=17, vocab_size=1004,
                             dp_rate=0.9, batch_size=batch_size)
     model = icm.build()
-    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', sample_weight_mode="temporal")
+    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', sample_weight_mode="temporal",
+                  metrics=['mse'])
     model_file = '../models/weights.{epoch:02d}-{val_loss:.2f}.h5'
     
     ep = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='auto')
@@ -158,4 +159,8 @@ if __name__ == '__main__':
                   {'image_input': imfeats_val, 'prev_words': caps_val}, {'out': caps_val.reshape(num_val, 17, 1)}))
     
     predictions = model.predict(x={'image_input': imfeats_train, 'prev_words': caps_train})
+    mse = model.evaluate(x={'image_input': imfeats_val, 'prev_words': caps_val},
+                         y={'out': caps_val.reshape(num_val, 17, 1)},
+                         batch_size=batch_size)
     print(predictions.argmax(-1)[0])
+    print(mse)
