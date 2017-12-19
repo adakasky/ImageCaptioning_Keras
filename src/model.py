@@ -5,6 +5,7 @@ from keras.layers import Conv1D, MaxPooling1D, BatchNormalization, GlobalAverage
     Flatten, Dense, add, concatenate, multiply, Permute, Reshape, RepeatVector, Embedding, TimeDistributed, LSTM, \
     Bidirectional, Lambda
 from keras.callbacks import EarlyStopping, ModelCheckpoint, Callback
+from keras.optimizers import Adam
 from keras import backend as K
 from data import load_coco_data, sample_coco_minibatch, decode_captions
 
@@ -135,10 +136,12 @@ class ImageCaptionModel(object):
 
 if __name__ == '__main__':
     batch_size = 100
+    learning_rate = 3e-3
     icm = ImageCaptionModel(feature_dim=512, embed_dim=300, z_dim=300, lstm_dim=512, sent_len=17, vocab_size=1004,
                             dp_rate=0.9, batch_size=batch_size)
     model = icm.build()
-    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', sample_weight_mode="temporal",
+    optimizer = Adam(lr=learning_rate)
+    model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', sample_weight_mode="temporal",
                   metrics=['mse'])
     model_file = '../models/weights.{epoch:02d}-{val_loss:.2f}.h5'
     
