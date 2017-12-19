@@ -7,6 +7,7 @@ from keras.layers import Conv1D, MaxPooling1D, BatchNormalization, GlobalAverage
 from keras.callbacks import EarlyStopping, ModelCheckpoint, Callback
 from keras.optimizers import Adam
 from keras import backend as K
+from keras.utils import plot_model
 from data import load_coco_data, sample_coco_minibatch, decode_captions
 
 
@@ -143,6 +144,9 @@ if __name__ == '__main__':
     optimizer = Adam(lr=learning_rate)
     model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', sample_weight_mode="temporal",
                   metrics=['mse'])
+    model.summary()
+    plot_model(model, to_file='../doc/model.png')
+    
     model_file = '../models/weights.{epoch:02d}-{val_loss:.2f}.h5'
     
     ep = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='auto')
