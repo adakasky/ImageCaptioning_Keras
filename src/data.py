@@ -18,20 +18,20 @@ def load_coco_data(base_dir='../data/coco_captioning',
         for k, v in f.items():
             data[k] = np.asarray(v)
     
-    # if pca_features:
-    #     train_feat_file = os.path.join(base_dir, 'train2014_vgg16_fc7_pca.h5')
-    # else:
-    #     train_feat_file = os.path.join(base_dir, 'train2014_vgg16_fc7.h5')
-    # with h5py.File(train_feat_file, 'r') as f:
-    #     data['train_features'] = np.asarray(f['features'])
-    #
-    # if pca_features:
-    #     val_feat_file = os.path.join(base_dir, 'val2014_vgg16_fc7_pca.h5')
-    # else:
-    #     val_feat_file = os.path.join(base_dir, 'val2014_vgg16_fc7.h5')
-    # with h5py.File(val_feat_file, 'r') as f:
-    #     data['val_features'] = np.asarray(f['features'])
-    #
+    if pca_features:
+        train_feat_file = os.path.join(base_dir, 'train2014_vgg16_fc7_pca.h5')
+    else:
+        train_feat_file = os.path.join(base_dir, 'train2014_vgg16_fc7.h5')
+    with h5py.File(train_feat_file, 'r') as f:
+        data['train_features'] = np.asarray(f['features'])
+
+    if pca_features:
+        val_feat_file = os.path.join(base_dir, 'val2014_vgg16_fc7_pca.h5')
+    else:
+        val_feat_file = os.path.join(base_dir, 'val2014_vgg16_fc7.h5')
+    with h5py.File(val_feat_file, 'r') as f:
+        data['val_features'] = np.asarray(f['features'])
+
     dict_file = os.path.join(base_dir, 'coco2014_vocab.json')
     with open(dict_file, 'r') as f:
         dict_data = json.load(f)
@@ -79,6 +79,21 @@ def decode_captions(captions, idx_to_word):
     return decoded
 
 
+def sample_coco_minibatch(data, batch_size=100, split='train'):
+    split_size = data['%s_captions' % split].shape[0]
+    mask = np.random.choice(split_size, batch_size)
+    captions = data['%s_captions' % split][mask]
+    image_idxs = data['%s_image_idxs' % split][mask]
+    image_features = data['%s_features' % split][image_idxs]
+    urls = data['%s_urls' % split][image_idxs]
+    return captions, image_features, urls
+
+
 if __name__ == '__main__':
-    data = load_coco_data()
-    print(data)
+    data = load_coco_data('../data/coco_captioning', max_train=None, pca_features=True)
+    print(data['train_captions'].shape)
+    print(data['val_captions'].shape)
+    captions, image_features, urls = sample_coco_minibatch(data, batch_size=100, split='train')
+    print(image_features.shape)
+    print(decode_captions(captions, data['idx_to_word']))
+    print(captions)
