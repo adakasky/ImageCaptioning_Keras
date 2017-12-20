@@ -138,7 +138,7 @@ class ImageCaptionModel(object):
 
 
 if __name__ == '__main__':
-    batch_size = 100
+    batch_size = 10
     learning_rate = 3e-3
     icm = ImageCaptionModel(feature_dim=512, embed_dim=300, z_dim=300, lstm_dim=512, sent_len=17, vocab_size=1004,
                             dp_rate=0.9, batch_size=batch_size)
@@ -156,8 +156,8 @@ if __name__ == '__main__':
                          mode='auto')
     
     data = load_coco_data('../data/coco_captioning', max_train=None, pca_features=True)
-    num_train = data['train_captions'].shape[0]
-    num_val = data['val_captions'].shape[0]
+    num_train = batch_size#data['train_captions'].shape[0]
+    num_val = batch_size#data['val_captions'].shape[0]
     caps_train, imfeats_train, urls_train = sample_coco_minibatch(data, batch_size=num_train, split='train')
     caps_val, imfeats_val, urls_val = sample_coco_minibatch(data, batch_size=num_val, split='val')
     
@@ -180,6 +180,7 @@ if __name__ == '__main__':
     print(predictions_val.argmax(-1)[0])
     print(mse_train)
     print(mse_val)
-    pickle.dump({'pred_train': predictions_train, 'decode_pred_train': decode_captions(predictions_train),
-                 'pred_val': predictions_val, 'decode_pred_val': decode_captions(predictions_val)},
+    idx_to_word = data['idx_to_word']
+    pickle.dump({'pred_train': predictions_train, 'decode_pred_train': decode_captions(predictions_train, idx_to_word),
+                 'pred_val': predictions_val, 'decode_pred_val': decode_captions(predictions_val, idx_to_word)},
                 codecs.open('../models/predictions.pkl', 'wb'))
