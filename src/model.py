@@ -156,8 +156,8 @@ if __name__ == '__main__':
                          mode='auto')
     
     data = load_coco_data('../data/coco_captioning', max_train=None, pca_features=True)
-    num_train = batch_size#data['train_captions'].shape[0]
-    num_val = batch_size#data['val_captions'].shape[0]
+    num_train = data['train_captions'].shape[0]
+    num_val = data['val_captions'].shape[0]
     caps_train, imfeats_train, urls_train = sample_coco_minibatch(data, batch_size=num_train, split='train')
     caps_val, imfeats_val, urls_val = sample_coco_minibatch(data, batch_size=num_val, split='val')
     
@@ -176,8 +176,10 @@ if __name__ == '__main__':
                              y={'out': caps_val.reshape(num_val, 17, 1)},
                              batch_size=batch_size)
     model.save('../models/final_model.h5')
-    print(predictions_train.argmax(-1)[0])
-    print(predictions_val.argmax(-1)[0])
+    predictions_train = predictions_train.argmax(-1)
+    predictions_val = predictions_val.argmax(-1)
+    print(predictions_train[0])
+    print(predictions_val[0])
     print(mse_train)
     print(mse_val)
     idx_to_word = data['idx_to_word']
